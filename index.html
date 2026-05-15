@@ -5,7 +5,6 @@
     <title>Munchy | What's for dinner?</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* CSS Variables for easy color swapping */
         :root {
             --primary: #FFB370;
             --secondary: #FFD49B;
@@ -14,151 +13,109 @@
             --bg: #FFF9F3;
             --text: #333;
             --text-light: #5D4037;
+            --nav-height: 70px;
         }
 
         body { 
-            margin: 0; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh; 
-            background-color: var(--bg);
-            color: var(--text);
+            margin: 0; font-family: 'Segoe UI', sans-serif; 
+            display: flex; flex-direction: column; min-height: 100vh; 
+            background-color: var(--bg); color: var(--text);
         }
-
-        /* --- NAVBAR --- */
         .navbar { 
             background-color: var(--primary); 
-            padding: 15px 30px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
+            height: var(--nav-height);
+            padding: 0 30px; 
+            display: flex; align-items: center; justify-content: space-between; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-            z-index: 10;
-            position: sticky;
-            top: 0;
+            z-index: 1000; 
+            position: sticky; top: 0;
+            box-sizing: border-box;
         }
         .nav-left { display: flex; align-items: center; gap: 25px; }
-        .navbar b a { 
-            text-decoration: none; 
-            color: var(--text); 
-            font-size: 28px; 
-            letter-spacing: -1px;
-        }
+        .navbar b a { text-decoration: none; color: var(--text); font-size: 28px; letter-spacing: -1px; }
         .navbar input { 
-            background-color: #FFF; 
-            padding: 10px 20px; 
-            border: 1px solid #E6A060; 
-            border-radius: 25px; 
-            width: 300px; 
-            outline: none;
-            transition: box-shadow 0.3s;
+            background-color: #FFF; padding: 10px 20px; border: 1px solid #E6A060; 
+            border-radius: 25px; width: 300px; outline: none;
         }
-        .navbar input:focus { box-shadow: 0 0 8px rgba(230, 126, 34, 0.4); }
 
         .susbutton { 
-            background-color: var(--accent); 
-            color: white; 
-            font-weight: bold; 
-            cursor: pointer; 
-            border: none; 
-            padding: 10px 25px; 
-            border-radius: 25px; 
-            transition: 0.3s; 
+            background-color: var(--accent); color: white; font-weight: bold; 
+            cursor: pointer; border: none; padding: 10px 25px; border-radius: 25px; transition: 0.3s; 
         }
         .susbutton:hover { background-color: var(--accent-dark); transform: scale(1.05); }
-
-        /* --- LAYOUT --- */
-        .main-container { display: flex; flex: 1; }
-        
+        .main-container { display: flex; flex: 1; position: relative; }
         .sidebar { 
-            width: 200px; 
-            padding: 30px 20px; 
+            width: 220px; 
             background-color: var(--secondary); 
             border-right: 1px solid #F3C184;
+            padding: 30px 0;
+            /* Stickiness */
+            position: sticky;
+            top: var(--nav-height);
+            height: calc(100vh - var(--nav-height));
+            align-self: flex-start;
+            box-sizing: border-box;
+            overflow-y: auto;
         }
-        .sidebar h4 { margin-top: 0; color: var(--accent-dark); text-transform: uppercase; font-size: 12px; }
+        .sidebar-label {
+            padding: 0 20px; margin-bottom: 15px;
+            font-size: 12px; font-weight: bold; color: var(--accent-dark);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
         .sidebar a { 
-            text-decoration: none; 
-            color: var(--text-light); 
-            display: block; 
-            margin-bottom: 15px; 
-            font-weight: 600; 
-            cursor: pointer;
-            transition: 0.2s;
+            text-decoration: none; color: var(--text-light); 
+            display: block; font-weight: 600; cursor: pointer;
+            padding: 12px 20px;
+            border-left: 4px solid transparent;
+            transition: all 0.2s ease;
         }
-        .sidebar a:hover { color: var(--accent); padding-left: 5px; }
+        .sidebar a:hover { 
+            color: var(--accent); 
+            background-color: rgba(255, 255, 255, 0.4);
+            border-left: 4px solid var(--accent);
+        }
 
+        /* --- CONTENT AREA --- */
         .content { flex: 1; padding: 30px; }
-        .content h2 { margin-top: 0; font-weight: 300; }
+        
+        #loader {
+            display: none; width: 50px; height: 50px;
+            border: 5px solid #f3f3f3; border-top: 5px solid var(--accent);
+            border-radius: 50%; animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- RECIPE GRID --- */
-        .recipe-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
-            gap: 25px; 
-        }
-        .card { 
-            background: white; 
-            border-radius: 15px; 
-            overflow: hidden; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            transition: 0.3s; 
-            cursor: pointer; 
-        }
+        .recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; cursor: pointer; }
         .card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .card img { width: 100%; height: 200px; object-fit: cover; }
         .card-info { padding: 15px; }
-        .card-info span { font-size: 11px; color: var(--accent); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        .card-info h3 { margin: 5px 0 0; font-size: 18px; color: var(--text); }
-
-        /* --- MODAL --- */
+        .card-info span { font-size: 11px; color: var(--accent); font-weight: bold; text-transform: uppercase; }
+        .card-info h3 { margin: 5px 0 0; font-size: 18px; line-height: 1.3; }
         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            backdrop-filter: blur(5px);
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;
+            padding: 20px; backdrop-filter: blur(5px);
         }
         .modal-content {
-            background: white;
-            width: 100%;
-            max-width: 900px;
-            max-height: 85vh;
-            border-radius: 20px;
-            overflow-y: auto;
-            position: relative;
-            padding: 40px;
-            animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: white; width: 100%; max-width: 900px; max-height: 85vh;
+            border-radius: 20px; overflow-y: auto; padding: 40px;
+            animation: slideUp 0.4s ease-out; box-sizing: border-box;
         }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .close-btn {
-            position: sticky; top: -10px; float: right;
-            font-size: 35px; cursor: pointer; color: var(--accent);
-            background: white; border-radius: 50%; width: 40px; height: 40px;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .close-btn { float: right; font-size: 35px; cursor: pointer; color: var(--accent); line-height: 1; }
         .modal-header { display: flex; gap: 30px; margin-bottom: 30px; flex-wrap: wrap; }
         .modal-header img { width: 300px; height: 300px; object-fit: cover; border-radius: 15px; }
-        .modal-header-text { flex: 1; min-width: 250px; }
-        
-        .ingredients-list { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            background: #fff5eb;
-            padding: 20px;
-            border-radius: 10px;
-            list-style: none;
+        .ingredients-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #fff5eb; padding: 20px; border-radius: 10px; list-style: none; }
+        .instructions { line-height: 1.8; white-space: pre-line; color: #444; }
+
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; top: 0; display: flex; flex-wrap: wrap; padding: 10px; }
+            .sidebar a { padding: 10px; border-left: none; border-bottom: 2px solid transparent; }
+            .sidebar-label { width: 100%; }
         }
-        .ingredients-list li::before { content: "• "; color: var(--accent); font-weight: bold; }
-        
-        .instructions { line-height: 1.8; color: #444; white-space: pre-line; }
     </style>
 </head>
 <body>
@@ -166,14 +123,14 @@
     <div class="navbar">
         <div class="nav-left">
             <b><a href="#" onclick="location.reload()">Munchy</a></b>
-            <input id="searchbar" type="text" placeholder="Search by name, area, or category..." onkeyup="handleSearch(event)">
+            <input id="searchbar" type="text" placeholder="Search name, area, or category..." onkeyup="handleSearch(event)">
         </div>
         <button class="susbutton" type="button" onclick="fetchRandom()">🎲 Surprise Me!</button>
     </div>
 
     <div class="main-container">
         <div class="sidebar">
-            <h4>Quick Filter</h4>
+            <div class="sidebar-label">Categories</div>
             <a onclick="filterBySidebar('Seafood')">🐟 Seafood</a>
             <a onclick="filterBySidebar('Vegetarian')">🌱 Vegetarian</a>
             <a onclick="filterBySidebar('Dessert')">🍰 Desserts</a>
@@ -183,8 +140,8 @@
         
         <div class="content">
             <h2 id="result-title">Popular Recipes</h2>
-            <div class="recipe-grid" id="recipe-grid">
-                </div>
+            <div id="loader"></div>
+            <div class="recipe-grid" id="recipe-grid"></div>
         </div>
     </div>
 
@@ -197,35 +154,39 @@
 
     <script>
         const grid = document.getElementById('recipe-grid');
+        const loader = document.getElementById('loader');
         const title = document.getElementById('result-title');
         const modal = document.getElementById('recipeModal');
         const modalBody = document.getElementById('modal-body');
-        
         let allMeals = [];
 
+        function toggleLoading(show) {
+            loader.style.display = show ? 'block' : 'none';
+            grid.style.opacity = show ? '0.2' : '1';
+        }
+
         async function init() {
-            grid.innerHTML = "<p>Loading recipes...</p>";
-            // Fetch initial batch (defaults to meals starting with 's')
+            toggleLoading(true);
             const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=`);
             const data = await res.json();
             allMeals = data.meals || [];
             displayMeals(allMeals);
+            toggleLoading(false);
         }
 
         function displayMeals(meals) {
             grid.innerHTML = "";
             if (!meals || meals.length === 0) {
-                grid.innerHTML = "<p>No recipes found matching those keywords.</p>";
+                grid.innerHTML = "<p>No recipes found.</p>";
                 return;
             }
-
             meals.forEach(meal => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
                     <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
                     <div class="card-info">
-                        <span>${meal.strArea} • ${meal.strCategory}</span>
+                        <span>${meal.strArea || ''} • ${meal.strCategory || ''}</span>
                         <h3>${meal.strMeal}</h3>
                     </div>
                 `;
@@ -241,42 +202,37 @@
                        (meal.strCategory && meal.strCategory.toLowerCase().includes(query)) || 
                        (meal.strArea && meal.strArea.toLowerCase().includes(query));
             });
-
             title.innerText = query ? `Results for "${query}"` : "Popular Recipes";
             displayMeals(filtered);
         }
 
         async function filterBySidebar(cat) {
-            // Sidebar uses specific category API for accuracy
-            title.innerText = `Focus: ${cat}`;
-            grid.innerHTML = "<p>Fetching items...</p>";
+            window.scrollTo({top: 0, behavior: 'smooth'});
+            toggleLoading(true);
+            title.innerText = `Category: ${cat}`;
             const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${cat}`);
             const data = await res.json();
             displayMeals(data.meals);
+            toggleLoading(false);
         }
 
         async function openRecipe(id) {
             const res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`);
             const data = await res.json();
             const meal = data.meals[0];
-
             let ingredientsHTML = '';
             for (let i = 1; i <= 20; i++) {
-                const ing = meal[`strIngredient${i}`];
-                const measure = meal[`strMeasure${i}`];
-                if (ing && ing.trim() !== "") {
-                    ingredientsHTML += `<li><strong>${measure}</strong> ${ing}</li>`;
+                if (meal[`strIngredient${i}`] && meal[`strIngredient${i}`].trim() !== "") {
+                    ingredientsHTML += `<li><strong>${meal[`strMeasure${i}`]}</strong> ${meal[`strIngredient${i}`]}</li>`;
                 }
             }
-
             modalBody.innerHTML = `
                 <div class="modal-header">
-                    <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
-                    <div class="modal-header-text">
+                    <img src="${meal.strMealThumb}">
+                    <div>
                         <h1>${meal.strMeal}</h1>
-                        <p><strong>Cuisine:</strong> ${meal.strArea}</p>
-                        <p><strong>Type:</strong> ${meal.strCategory}</p>
-                        ${meal.strYoutube ? `<a href="${meal.strYoutube}" target="_blank" style="display:inline-block; margin-top:10px; padding:10px 20px; background:#FF0000; color:white; text-decoration:none; border-radius:5px; font-weight:bold;">▶ Watch Video</a>` : ''}
+                        <p><strong>Cuisine:</strong> ${meal.strArea} | <strong>Category:</strong> ${meal.strCategory}</p>
+                        ${meal.strYoutube ? `<a href="${meal.strYoutube}" target="_blank" style="color:red; font-weight:bold; text-decoration:none; border:2px solid red; padding:5px 10px; border-radius:5px; display:inline-block; margin-top:10px;">▶ Watch on YouTube</a>` : ''}
                     </div>
                 </div>
                 <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
@@ -295,6 +251,7 @@
             const data = await res.json();
             openRecipe(data.meals[0].idMeal);
         }
+
         init();
     </script>
 </body>
